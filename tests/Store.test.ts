@@ -4,7 +4,7 @@ import {TransactionPool} from "../src/classes/TransactionPool";
 describe("Store", () => {
 
 	test("Data storing", () => {
-		const store = new Store();
+		const store = new Store(new TransactionPool());
 
 		store.set(undefined, "name", "Mae");
 		store.set(undefined, "balance", 42);
@@ -19,11 +19,12 @@ describe("Store", () => {
 	});
 
 	test("Transaction isolation", () => {
-		const store = new Store();
 		const pool = new TransactionPool();
-		const transaction = pool.start();
+		const store = new Store(pool);
 
 		store.set(undefined, "name", "Mae");
+
+		const transaction = pool.start();
 		store.set(transaction, "name", "Bea");
 
 		expect(
@@ -47,8 +48,8 @@ describe("Store", () => {
 	});
 
 	test("Transaction updating", () => {
-		const store = new Store();
 		const pool = new TransactionPool();
+		const store = new Store(pool);
 		const transaction = pool.start();
 
 		store.set(transaction, "name", "Mae");
